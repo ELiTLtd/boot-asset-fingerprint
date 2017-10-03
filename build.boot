@@ -6,20 +6,20 @@
                   [metosin/boot-alt-test "0.2.1"  :scope "test"]])
 
 (require
-  '[adzerk.bootlaces :as deploy]
-  '[metosin.boot-alt-test :as boot-test])
+ '[adzerk.bootlaces :as deploy]
+ '[metosin.boot-alt-test :as boot-test])
 
 (def +version+ "1.3.1")
 
 (deploy/bootlaces! +version+)
 
 (task-options!
-  pom {:project     'elit/boot-asset-fingerprint
-       :version     +version+
-       :description "Boot task to fingerprint asset references in html files."
-       :url         "https://github.com/ELiTLtd/boot-asset-fingerprint"
-       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
-       :license     {"MIT" "https://opensource.org/licenses/MIT"}})
+ pom {:project     'elit/boot-asset-fingerprint
+      :version     +version+
+      :description "Boot task to fingerprint asset references in html files."
+      :url         "https://github.com/ELiTLtd/boot-asset-fingerprint"
+      :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
+      :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
 (deftask dev []
   (comp
@@ -28,16 +28,16 @@
 
 (deftask run-tests []
   (merge-env!
-    :source-paths ["test/src"]
-    :resource-paths ["test/resources"])
+   :source-paths ["test/src"]
+   :resource-paths ["test/resources"])
   (boot-test/alt-test))
 
 (deftask push-release []
   (comp
-    (deploy/build-jar)
-    (#'deploy/collect-clojars-credentials)
-    (push
-      :tag            true
-      :gpg-sign       false
-      :ensure-release true
-      :repo           "deploy-clojars")))
+   (deploy/build-jar)
+   (#'deploy/collect-clojars-credentials)
+   (push
+    :tag            true
+    :gpg-sign       false
+    :ensure-release true
+    :repo           "deploy-clojars")))
