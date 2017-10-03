@@ -1,6 +1,7 @@
 * boot-asset-fingerprint
 
-[[http://clojars.org/afrey/boot-asset-fingerprint][http://clojars.org/afrey/boot-asset-fingerprint/latest-version.svg]]
+[![Build Status](https://travis-ci.org/ELiTLtd/boot-asset-fingerprint.svg?branch=master)](https://travis-ci.org/ELiTLtd/boot-asset-fingerprint)
+[[http://clojars.org/elit/boot-asset-fingerprint][http://clojars.org/afrey/boot-asset-fingerprint/latest-version.svg]]
 
 A boot task to add a cache-busting fingerprint to asset references in
 HTML files.
