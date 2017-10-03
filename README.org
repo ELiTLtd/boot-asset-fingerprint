@@ -1,6 +1,5 @@
 
-
-* boot-asset-fingerprint [![Build Status](https://travis-ci.org/ELiTLtd/boot-asset-fingerprint.svg?branch=master)](https://travis-ci.org/ELiTLtd/boot-asset-fingerprint)
+* boot-asset-fingerprint ![Build Status](https://travis-ci.org/ELiTLtd/boot-asset-fingerprint.svg?branch=master)
 
 [[http://clojars.org/elit/boot-asset-fingerprint][http://clojars.org/elit/boot-asset-fingerprint/latest-version.svg]]
 
