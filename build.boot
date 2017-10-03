@@ -14,11 +14,11 @@
 (deploy/bootlaces! +version+)
 
 (task-options!
-  pom {:project     'afrey/boot-asset-fingerprint
+  pom {:project     'elit/boot-asset-fingerprint
        :version     +version+
        :description "Boot task to fingerprint asset references in html files."
-       :url         "https://github.com/AdamFrey/boot-asset-fingerprint"
-       :scm         {:url "https://github.com/AdamFrey/boot-asset-fingerprint"}
+       :url         "https://github.com/ELiTLtd/boot-asset-fingerprint"
+       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
        :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
 (deftask dev []
