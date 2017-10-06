@@ -3,7 +3,8 @@
   :dependencies '[[org.clojure/clojure   "1.8.0"  :scope "provided"]
                   [boot/core             "2.1.0"  :scope "provided"]
                   [adzerk/bootlaces      "0.1.13" :scope "test"]
-                  [metosin/boot-alt-test "0.2.1"  :scope "test"]])
+                  [metosin/boot-alt-test "0.2.1"  :scope "test"]]
+  :resource-paths #{"resources"})
 
 (require
  '[adzerk.bootlaces :as deploy]
@@ -21,10 +22,15 @@
       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
       :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
+(require '[elit.boot-asset-fingerprint :refer [test-fingerprint]])
+
 (deftask dev []
   (comp
-    (watch)
-    (deploy/build-jar)))
+   (watch)
+   (with-pre-wrap fileset
+     (test-fingerprint fileset)
+     fileset)
+   (deploy/build-jar)))
 
 (deftask run-tests []
   (merge-env!
