@@ -22,14 +22,12 @@
       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
       :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
-(require '[elit.boot-asset-fingerprint :refer [test-fingerprint]])
+(require '[elit.boot-asset-fingerprint :refer [asset-fingerprint]])
 
 (deftask dev []
   (comp
    (watch)
-   (with-pre-wrap fileset
-     (test-fingerprint fileset {:extensions [".html" ".css"]})
-     fileset)
+   (asset-fingerprint)
    (target)))
 
 (deftask run-tests []
