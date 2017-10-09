@@ -2,32 +2,12 @@
   {:boot/export-tasks true}
   (:require [boot.core :as boot]
             [clojure.java.io :as io]
+            [elit.dir-writer :as writer]
             [elit.fingerprint :as fingerprint]))
-
-(defprotocol DirWriter
-  (update-file! [this path contents])
-  (copy-file! [this file dest-path]))
-
-(defrecord TmpDirWriter [out-dir]
-  DirWriter
-  (update-file! [_ path contents]
-    (prn "update-file " path contents)
-    (let [out-file (io/file out-dir path)]
-      (io/make-parents out-file)
-      (spit out-file contents)))
-  (copy-file! [_ {:keys [dir path] :as src-file} dst-path]
-    (prn "copying " dir path "to" dst-path)
-    (let [in-file (let [out-file (io/file out-dir dst-path)]
-                    (if (.exists out-file)
-                      out-file
-                      (io/file dir path)))
-          out-file (io/file out-dir dst-path)]
-      (io/make-parents out-file)
-      (io/copy in-file out-file))))
 
 (defn asset-fingerprint*
   [files out-dir {:keys [asset-root asset-host extensions path->file skip?] :as opts}]
-  (let [file-writer (->TmpDirWriter out-dir)]
+  (let [file-writer (writer/->TmpDirWriter out-dir)]
     (loop [[{:keys [path] :as file} :as content-files] files
            asset-paths []]
       (if file
@@ -35,27 +15,40 @@
               updated-file-text (fingerprint/update-text file-text
                                                          {:extensions extensions
                                                           :path->file path->file})]
-          (update-file! file-writer path updated-file-text)
+          (writer/update-file! file-writer path updated-file-text)
           (recur (rest content-files)
                  (concat asset-paths (fingerprint/find-asset-refs file-text))))
         (when-not skip?
-          (prn "asset-paths: " asset-paths)
           (doseq [asset-path asset-paths]
             (let [{:keys [path hash] :as file} (get path->file asset-path)]
-              (copy-file! file-writer file (fingerprint/fingerprint-file-path asset-path hash)))))))))
+              (writer/copy-file! file-writer
+                                 file
+                                 (fingerprint/fingerprint-file-path asset-path hash)))))))))
 
 (boot/deftask asset-fingerprint
-  []
-  (let [extensions [".html" ".css"]
-        opts {:skip? false :extensions extensions}
-        out-dir (boot/tmp-dir!)]
+  "Replace asset references with a URL query-parameter based on the hash contents.
+
+  The main purpose of doing this is for cache-busting static assets
+  that were deployed with a far-future expiration date. See the Ruby
+  on Rails Asset Pipeline guide, segment \"What is Fingerprinting and
+  Why Should I Care\" for a detailed explanation of why you want to do this.
+  (http://guides.rubyonrails.org/asset_pipeline.html#what-is-fingerprinting-and-why-should-i-care-questionmark) "
+  [a asset-root        ROOT  str   "The root dir where the assets are served from"
+   e extensions        EXT   [str] "Add a file extension to indicate the files to process for asset references."
+   o asset-host        HOST  str   "Host to prefix all asset urls with e.g. https://your-host.com"
+   s skip                    bool  "Skips file fingerprinting and replaces each asset url with bare"
+   t strict                  bool  "Throws an exception if an asset is not found in the fileset. Defaults to true"]
+  (let [out-dir (boot/tmp-dir!)]
     (boot/with-pre-wrap fileset
-      (let [files (boot/input-files fileset)
-            path->file (->> (map (juxt :path identity) files)
-                            (into {}))]
-        (asset-fingerprint* (boot/by-ext extensions files)
+      (let [files (boot/input-files fileset)]
+        (asset-fingerprint* (boot/by-ext (or extensions [".html" ".css"])
+                                         files)
                             out-dir
-                            (assoc opts :path->file path->file))
+                            {:asset-host asset-host
+                             :asset-root asset-root
+                             :path->file (->> (map (juxt :path identity) files)
+                                              (into {}))
+                             :skip? (boolean skip)})
         (-> fileset
             (boot/add-resource out-dir)
             (boot/commit!))))))

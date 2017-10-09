@@ -54,6 +54,6 @@
       match)))
 
 (defn update-text
-  [file-text {:keys [extensions path->file] :as opts}]
+  [file-text opts]
   (string/replace file-text asset-regex (comp (replacer-fn opts)
                                               second)))
