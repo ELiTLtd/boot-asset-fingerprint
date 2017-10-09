@@ -11,9 +11,19 @@
 (defrecord TmpDirWriter [out-dir]
   DirWriter
   (update-file! [_ path contents]
-    (prn "updating file text!" path "to" contents))
-  (copy-file! [_ src-path dest-path]
-    (prn "copying" src-path "to " dest-path)))
+    (prn "update-file " path contents)
+    (let [out-file (io/file out-dir path)]
+      (io/make-parents out-file)
+      (spit out-file contents)))
+  (copy-file! [_ {:keys [dir path] :as src-file} dst-path]
+    (prn "copying " dir path "to" dst-path)
+    (let [in-file (let [out-file (io/file out-dir dst-path)]
+                    (if (.exists out-file)
+                      out-file
+                      (io/file dir path)))
+          out-file (io/file out-dir dst-path)]
+      (io/make-parents out-file)
+      (io/copy in-file out-file))))
 
 (defn asset-fingerprint*
   [files out-dir {:keys [asset-root asset-host extensions path->file skip?] :as opts}]
@@ -32,7 +42,7 @@
           (prn "asset-paths: " asset-paths)
           (doseq [asset-path asset-paths]
             (let [{:keys [path hash] :as file} (get path->file asset-path)]
-              (copy-file! file-writer path (fingerprint/fingerprint-file-path asset-path hash)))))))))
+              (copy-file! file-writer file (fingerprint/fingerprint-file-path asset-path hash)))))))))
 
 (boot/deftask asset-fingerprint
   []
