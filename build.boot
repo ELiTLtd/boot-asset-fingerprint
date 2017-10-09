@@ -28,9 +28,9 @@
   (comp
    (watch)
    (with-pre-wrap fileset
-     (test-fingerprint fileset)
+     (test-fingerprint fileset {:extensions [".html" ".css"]})
      fileset)
-   (deploy/build-jar)))
+   (target)))
 
 (deftask run-tests []
   (merge-env!
