@@ -8,7 +8,6 @@
 (defrecord TmpDirWriter [out-dir]
   DirWriter
   (update-file! [_ path contents]
-    (prn "update-file " path contents)
     (let [out-file (io/file out-dir path)]
       (io/make-parents out-file)
       (spit out-file contents)))
@@ -19,5 +18,4 @@
                       (io/file dir path)))
           out-file (io/file out-dir dst-path)]
       (io/make-parents out-file)
-      (prn "copying " in-file "to" out-file)
       (io/copy in-file out-file))))
