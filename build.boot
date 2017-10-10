@@ -1,16 +1,15 @@
 (set-env!
   :source-paths #{"src"}
   :dependencies '[[org.clojure/clojure   "1.8.0"  :scope "provided"]
-                  [boot/core             "2.1.0"  :scope "provided"]
+                  [boot/core             "2.7.2"  :scope "provided"]
                   [adzerk/bootlaces      "0.1.13" :scope "test"]
-                  [metosin/boot-alt-test "0.2.1"  :scope "test"]]
-  :resource-paths #{"resources"})
+                  [metosin/boot-alt-test "0.3.2"  :scope "test"]])
 
 (require
  '[adzerk.bootlaces :as deploy]
  '[metosin.boot-alt-test :as boot-test])
 
-(def +version+ "1.3.1")
+(def +version+ "0.1.0-SNAPSHOT")
 
 (deploy/bootlaces! +version+)
 
@@ -22,19 +21,16 @@
       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
       :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
-(require '[elit.boot-asset-fingerprint :refer [asset-fingerprint]])
-
-(deftask dev []
-  (comp
-   (watch)
-   (asset-fingerprint)
-   (target)))
-
 (deftask run-tests []
   (merge-env!
    :source-paths ["test/src"]
    :resource-paths ["test/resources"])
   (boot-test/alt-test))
+
+(deftask build []
+  (comp
+   (deploy/build-jar)
+   (install)))
 
 (deftask push-release []
   (comp
@@ -44,4 +40,6 @@
     :tag            true
     :gpg-sign       false
     :ensure-release true
+    :ensure-clean   true
+    :ensure-branch  "master"
     :repo           "deploy-clojars")))
