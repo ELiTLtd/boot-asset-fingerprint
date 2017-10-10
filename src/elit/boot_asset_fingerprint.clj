@@ -46,7 +46,8 @@
                              :asset-root asset-root
                              :path->file (->> (map (juxt :path identity) files)
                                               (into {}))
-                             :skip? (boolean skip)})
+                             :skip? skip
+                             :strict? (or strict true)})
         (-> fileset
             (boot/add-resource out-dir)
             (boot/commit!))))))

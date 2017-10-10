@@ -47,7 +47,7 @@
                   second))))
 
 (defn replacer-fn
-  [{:keys [asset-root asset-host path->file skip?]}]
+  [{:keys [asset-root asset-host path->file skip? strict?]}]
   (fn [match]
     (if-not skip?
       (if-let [{:keys [hash]} (get path->file (normalise-asset-ref match asset-root))]
@@ -55,8 +55,11 @@
                (remove-asset-root asset-root)
                #(fingerprint-file-path % hash))
          match)
-        (do (prn "error trying to replace " match)
-            match))
+        (if strict?
+          (throw
+           (ex-info "Could not find asset in fileset"
+                    {:match match}))
+          match))
       match)))
 
 (defn update-text
