@@ -5,6 +5,8 @@
             [elit.dir-writer :as writer]
             [elit.fingerprint :as fingerprint]))
 
+(def default-extensions [".html"])
+
 (defn asset-fingerprint*
   [files out-dir {:keys [asset-root asset-host extensions path->file skip?] :as opts}]
   (let [file-writer (writer/->TmpDirWriter out-dir)]
@@ -39,7 +41,8 @@
   (let [out-dir (boot/tmp-dir!)]
     (boot/with-pre-wrap fileset
       (let [files (boot/input-files fileset)]
-        (asset-fingerprint* (boot/by-ext (or extensions [".html" ".css"])
+        (asset-fingerprint* (boot/by-ext (or extensions
+                                             default-extensions)
                                          files)
                             out-dir
                             {:asset-host asset-host
