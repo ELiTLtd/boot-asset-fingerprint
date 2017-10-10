@@ -21,11 +21,16 @@
       :scm         {:url "https://github.com/EliTLtd/boot-asset-fingerprint"}
       :license     {"MIT" "https://opensource.org/licenses/MIT"}})
 
-(deftask run-tests []
+(deftask testing []
   (merge-env!
    :source-paths ["test/src"]
    :resource-paths ["test/resources"])
-  (boot-test/alt-test))
+  identity)
+
+(deftask run-tests []
+  (comp
+   (testing)
+   (boot-test/alt-test)))
 
 (deftask build []
   (comp
