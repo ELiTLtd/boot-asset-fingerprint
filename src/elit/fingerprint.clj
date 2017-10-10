@@ -7,11 +7,6 @@
 (def file-path-regex #"(.*)\.([^.]*?)$")
 (def seperator-char (first (File/separator)))
 
-(defn find-asset-refs
-  [file-text]
-  (->> (re-seq asset-regex file-text)
-       (map second)))
-
 (defn fingerprint-file-path
   [path hash]
   (string/replace path file-path-regex (str "$1-" hash ".$2")))
@@ -40,11 +35,22 @@
     #(string/replace-first % (re-pattern (str asset-root seperator-char)) "")
     identity))
 
+(defn normalise-asset-ref
+  [asset-ref asset-root]
+  (cond->> (with-leading-slash asset-ref)
+    asset-root (str asset-root)))
+
+(defn find-asset-refs
+  [file-text {:keys [asset-root]}]
+  (->> (re-seq asset-regex file-text)
+       (map (comp #(normalise-asset-ref % asset-root)
+                  second))))
+
 (defn replacer-fn
   [{:keys [asset-root asset-host path->file skip?]}]
   (fn [match]
     (if-not skip?
-      (if-let [{:keys [hash]} (get path->file match)]
+      (if-let [{:keys [hash]} (get path->file (normalise-asset-ref match asset-root))]
         ((comp (prepend-asset-host asset-host)
                (remove-asset-root asset-root)
                #(fingerprint-file-path % hash))

@@ -12,12 +12,10 @@
            asset-paths []]
       (if file
         (let [file-text (slurp (io/resource path))
-              updated-file-text (fingerprint/update-text file-text
-                                                         {:extensions extensions
-                                                          :path->file path->file})]
+              updated-file-text (fingerprint/update-text file-text opts)]
           (writer/update-file! file-writer path updated-file-text)
           (recur (rest content-files)
-                 (concat asset-paths (fingerprint/find-asset-refs file-text))))
+                 (concat asset-paths (fingerprint/find-asset-refs file-text opts))))
         (when-not skip?
           (doseq [asset-path asset-paths]
             (let [{:keys [path hash] :as file} (get path->file asset-path)]
