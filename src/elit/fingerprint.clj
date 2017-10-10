@@ -31,7 +31,7 @@
 (defn remove-asset-root
   [asset-ref asset-root]
   (string/replace-first asset-ref
-                        (re-pattern (str asset-root seperator-char)) ""))
+                        (re-pattern (str asset-root separator-char)) ""))
 
 (defn prepend-asset-host
   [asset-ref {:keys [asset-host asset-root]}]
