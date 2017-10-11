@@ -16,6 +16,9 @@
   [asset-ref asset-host]
   (string/replace-first asset-ref (re-pattern asset-host) ""))
 
+#_
+;; doesn't work when triggered by a boot task
+
 (deftest boot-task-fingerprints-assets
   (let [asset-root "public"
         asset-host "https://my.cdn/assets"
