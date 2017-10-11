@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this
 file. This change log follows the conventions
 of [keepachangelog.com](http://keepachangelog.com/).
 
-## [Unreleased]
+## [2.0.0] - 2017-10-11
 ### Changed
 - Refactored implementation
 ### Added
