@@ -10,13 +10,13 @@
 (defn asset-fingerprint*
   [files out-dir {:keys [asset-root asset-host extensions path->file skip?] :as opts}]
   (let [file-writer (writer/->TmpDirWriter out-dir)]
-    (loop [[{:keys [path] :as file} :as content-files] files
+    (loop [[{:keys [path] :as file} & more-content-files] files
            asset-paths []]
       (if file
         (let [file-text (slurp (io/resource path))
               updated-file-text (fingerprint/update-text file-text opts)]
           (writer/update-file! file-writer path updated-file-text)
-          (recur (rest content-files)
+          (recur more-content-files
                  (concat asset-paths (fingerprint/find-asset-refs file-text opts))))
         (when-not skip?
           (doseq [asset-path asset-paths]
@@ -34,9 +34,9 @@
   Why Should I Care\" for a detailed explanation of why you want to do this.
   (http://guides.rubyonrails.org/asset_pipeline.html#what-is-fingerprinting-and-why-should-i-care-questionmark) "
   [a asset-root        ROOT  str   "The root dir where the assets are served from"
-   e extensions        EXT   [str] "Add a file extension to indicate the files to process for asset references."
+   e extensions        EXT   [str] "Add a file extension to indicate the files to process for asset references"
    o asset-host        HOST  str   "Host to prefix all asset urls with e.g. https://your-host.com"
-   s skip                    bool  "Skips file fingerprinting and replaces each asset url with bare"
+   s skip                    bool  "Skips file fingerprinting and replaces each asset reference with the unfingerprinted path"
    t strict                  bool  "Throws an exception if an asset is not found in the fileset. Defaults to true"]
   (let [out-dir (boot/tmp-dir!)]
     (boot/with-pre-wrap fileset
