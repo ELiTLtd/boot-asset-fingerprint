@@ -23,6 +23,8 @@ becomes
 
 with `js/app-0bafd97f3bdd0dcb44ca0c6ea7d106be.js` also committed to the fileset.
 
+All asset reference paths are *relative to the root directory where the assets are served*. See [asset root](#asset-root).
+
 ## Typical usage
 
 Add the `asset-fingerprint` task to your release pipeline:
@@ -44,6 +46,10 @@ To serve up assets in development, call the `asset-fingerprint` task with `skip`
         (asset-fingerprint :skip true)))
 ```
 
+### Asset root
+Specify the `asset-root` option if your assets are being served out of a subdirectory (such as `public`). This ensures all of the references to your assets are found in the fileset and updated correctly.
+### Host assets on a CDN
+Asset references can be prefixed with a base URL so that they are ready to be served up by a CDN. You can specify the base URL in the `asset-host` option.
 ## Attribution
 
 Credit goes to Adam Frey for creating the original [boot-asset-fingerprint](https://github.com/AdamFrey/boot-asset-fingerprint) library.
