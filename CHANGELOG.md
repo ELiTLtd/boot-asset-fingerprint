@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this
 file. This change log follows the conventions
 of [keepachangelog.com](http://keepachangelog.com/).
 
+## [Unreleased]
+### Changed
+- Refactored implementation
+### Added
+- Added strict option to throw an exception if an asset reference isn't found
+  in the fileset.
+
 ## [1.3.1] - 2017-04-18
 ### Fixed
 - Re-instated the ability to skip fingerprinting with the :skip task option
