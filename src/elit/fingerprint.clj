@@ -3,7 +3,7 @@
             [clojure.string :as string])
   (:import [java.io File]))
 
-(def asset-regex #"\$\{(.+?)\}")
+(def asset-regex #"\$\{([a-zA-Z0-9\$\-\.\/_]+)\}")
 (def file-path-regex #"(.*)\.([^.]*?)$")
 (def separator-char (first (File/separator)))
 (def leading-slash-regex (re-pattern (str "^" separator-char)))
