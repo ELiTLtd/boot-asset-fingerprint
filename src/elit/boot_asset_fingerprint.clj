@@ -42,8 +42,12 @@
   (let [out-dir (boot/tmp-dir!)]
     (boot/with-pre-wrap fileset
       (let [files (boot/input-files fileset)]
-        (asset-fingerprint* (cond->> (boot/by-ext (or extensions default-extensions) files)
-                              regexes (boot/by-re regexes))
+        (asset-fingerprint* (-> (concat
+                                 (boot/by-ext (or extensions
+                                                  default-extensions)
+                                              files)
+                                 (boot/by-re regexes files))
+                                (distinct))
                             out-dir
                             {:asset-host asset-host
                              :asset-root asset-root
