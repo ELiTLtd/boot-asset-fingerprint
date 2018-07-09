@@ -1,6 +1,6 @@
 (set-env!
   :source-paths #{"src"}
-  :dependencies '[[org.clojure/clojure   "1.8.0"  :scope "provided"]
+  :dependencies '[[org.clojure/clojure   "1.9.0"  :scope "provided"]
                   [boot/core             "2.7.2"  :scope "provided"]
                   [adzerk/bootlaces      "0.1.13" :scope "test"]
                   [metosin/boot-alt-test "0.3.2"  :scope "test"]])
@@ -9,7 +9,7 @@
  '[adzerk.bootlaces :as deploy]
  '[metosin.boot-alt-test :as boot-test])
 
-(def +version+ "2.0.0")
+(def +version+ "2.0.1")
 
 (deploy/bootlaces! +version+)
 
