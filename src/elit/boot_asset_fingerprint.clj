@@ -1,29 +1,9 @@
 (ns elit.boot-asset-fingerprint
   {:boot/export-tasks true}
   (:require [boot.core :as boot]
-            [clojure.java.io :as io]
-            [elit.dir-writer :as writer]
-            [elit.fingerprint :as fingerprint]))
+            [elit.asset-fingerprint.core :as core]))
 
 (def default-extensions [".html"])
-
-(defn asset-fingerprint*
-  [files out-dir {:keys [asset-root asset-host extensions path->file skip?] :as opts}]
-  (let [file-writer (writer/->TmpDirWriter out-dir)]
-    (loop [[{:keys [path] :as file} & more-content-files] files
-           asset-paths []]
-      (if file
-        (let [file-text (slurp (io/resource path))
-              updated-file-text (fingerprint/update-text file-text opts)]
-          (writer/update-file! file-writer path updated-file-text)
-          (recur more-content-files
-                 (concat asset-paths (fingerprint/find-asset-refs file-text opts))))
-        (when-not skip?
-          (doseq [asset-path asset-paths]
-            (let [{:keys [path hash] :as file} (get path->file asset-path)]
-              (writer/copy-file! file-writer
-                                 file
-                                 (fingerprint/fingerprint-file-path asset-path hash)))))))))
 
 (boot/deftask asset-fingerprint
   "Replace asset references with a URL query-parameter based on the hash contents.
@@ -42,19 +22,19 @@
   (let [out-dir (boot/tmp-dir!)]
     (boot/with-pre-wrap fileset
       (let [files (boot/input-files fileset)]
-        (asset-fingerprint* (-> (concat
-                                 (boot/by-ext (or extensions
-                                                  default-extensions)
-                                              files)
-                                 (boot/by-re regexes files))
-                                (distinct))
-                            out-dir
-                            {:asset-host asset-host
-                             :asset-root asset-root
-                             :path->file (->> (map (juxt :path identity) files)
-                                              (into {}))
-                             :skip? skip
-                             :strict? (or strict true)})
+        (core/asset-fingerprint (-> (concat
+                                     (boot/by-ext (or extensions
+                                                      default-extensions)
+                                                  files)
+                                     (boot/by-re regexes files))
+                                    (distinct))
+                                out-dir
+                                {:asset-host asset-host
+                                 :asset-root asset-root
+                                 :path->file (->> (map (juxt :path identity) files)
+                                                  (into {}))
+                                 :skip? skip
+                                 :strict? (or strict true)})
         (-> fileset
             (boot/add-resource out-dir)
             (boot/commit!))))))

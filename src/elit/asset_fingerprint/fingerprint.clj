@@ -1,4 +1,4 @@
-(ns elit.fingerprint
+(ns elit.asset-fingerprint.fingerprint
   (:require [clojure.java.io :as io]
             [clojure.string :as string])
   (:import [java.io File]))

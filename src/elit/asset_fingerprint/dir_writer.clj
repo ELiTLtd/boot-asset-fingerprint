@@ -1,4 +1,4 @@
-(ns elit.dir-writer
+(ns elit.asset-fingerprint.dir-writer
   (:require [clojure.java.io :as io]))
 
 (defprotocol DirWriter
